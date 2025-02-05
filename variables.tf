@@ -157,6 +157,7 @@ variable "vmw_network_peering" {
   type = map(object({
     name                                = string
     description                         = optional(string, null)
+    project                             = string
     peer_network                        = string
     peer_network_type                   = optional(string, "STANDARD")
     vmware_engine_network               = string

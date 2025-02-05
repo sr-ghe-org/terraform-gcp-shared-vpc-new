@@ -161,6 +161,7 @@ resource "google_vmwareengine_network_peering" "vmw-engine-network-peering" {
   provider                            = google-beta
   for_each                            = length(var.vmw_network_peering) > 0 ? var.vmw_network_peering : {}
   name                                = each.value.name
+  project                             = each.value.project
   description                         = each.value.description
   peer_network                        = each.value.peer_network
   peer_network_type                   = each.value.peer_network_type
