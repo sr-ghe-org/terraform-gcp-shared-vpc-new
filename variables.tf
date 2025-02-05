@@ -51,56 +51,56 @@ variable "network_configs" {
         name   = string
         region = string
       })), {})
-      # firewall_rules = object({
-      #   egress = optional(list(object({
-      #     name                    = string
-      #     description             = optional(string, null)
-      #     disabled                = optional(bool, null)
-      #     priority                = optional(number, null)
-      #     destination_ranges      = optional(list(string), [])
-      #     source_ranges           = optional(list(string), [])
-      #     source_tags             = optional(list(string))
-      #     source_service_accounts = optional(list(string))
-      #     target_tags             = optional(list(string))
-      #     target_service_accounts = optional(list(string))
+      firewall_rules = object({
+        egress = optional(list(object({
+          name                    = string
+          description             = optional(string, null)
+          disabled                = optional(bool, null)
+          priority                = optional(number, null)
+          destination_ranges      = optional(list(string), [])
+          source_ranges           = optional(list(string), [])
+          source_tags             = optional(list(string))
+          source_service_accounts = optional(list(string))
+          target_tags             = optional(list(string))
+          target_service_accounts = optional(list(string))
 
-      #     allow = optional(list(object({
-      #       protocol = string
-      #       ports    = optional(list(string))
-      #     })), [])
-      #     deny = optional(list(object({
-      #       protocol = string
-      #       ports    = optional(list(string))
-      #     })), [])
-      #     log_config = optional(object({
-      #       metadata = string
-      #     }))
-      #   })), []),
-      #   ingress = optional(list(object({
-      #     name                    = string
-      #     description             = optional(string, null)
-      #     disabled                = optional(bool, null)
-      #     priority                = optional(number, null)
-      #     destination_ranges      = optional(list(string), [])
-      #     source_ranges           = optional(list(string), [])
-      #     source_tags             = optional(list(string))
-      #     source_service_accounts = optional(list(string))
-      #     target_tags             = optional(list(string))
-      #     target_service_accounts = optional(list(string))
+          allow = optional(list(object({
+            protocol = string
+            ports    = optional(list(string))
+          })), [])
+          deny = optional(list(object({
+            protocol = string
+            ports    = optional(list(string))
+          })), [])
+          log_config = optional(object({
+            metadata = string
+          }))
+        })), []),
+        ingress = optional(list(object({
+          name                    = string
+          description             = optional(string, null)
+          disabled                = optional(bool, null)
+          priority                = optional(number, null)
+          destination_ranges      = optional(list(string), [])
+          source_ranges           = optional(list(string), [])
+          source_tags             = optional(list(string))
+          source_service_accounts = optional(list(string))
+          target_tags             = optional(list(string))
+          target_service_accounts = optional(list(string))
 
-      #     allow = optional(list(object({
-      #       protocol = string
-      #       ports    = optional(list(string))
-      #     })), [])
-      #     deny = optional(list(object({
-      #       protocol = string
-      #       ports    = optional(list(string))
-      #     })), [])
-      #     log_config = optional(object({
-      #       metadata = string
-      #     }))
-      #   })), []),
-      # }),
+          allow = optional(list(object({
+            protocol = string
+            ports    = optional(list(string))
+          })), [])
+          deny = optional(list(object({
+            protocol = string
+            ports    = optional(list(string))
+          })), [])
+          log_config = optional(object({
+            metadata = string
+          }))
+        })), []),
+      }),
       dns_peering_config = optional(map(object({
         dns_name                           = string
         domain                             = string
@@ -169,190 +169,5 @@ variable "vmw_network_peering" {
 }
 
 
-variable "firewall_rules" {
-  description = "Firewall rules configuration"
-  type = map(object({
-    project_id = string
-    egress = optional(list(object({
-      name                    = string
-      description             = optional(string, null)
-      disabled                = optional(bool, null)
-      priority                = optional(number, null)
-      destination_ranges      = optional(list(string), [])
-      source_ranges           = optional(list(string), [])
-      source_tags             = optional(list(string))
-      source_service_accounts = optional(list(string))
-      target_tags             = optional(list(string))
-      target_service_accounts = optional(list(string))
 
-      allow = optional(list(object({
-        protocol = string
-        ports    = optional(list(string))
-      })), [])
-      deny = optional(list(object({
-        protocol = string
-        ports    = optional(list(string))
-      })), [])
-      log_config = optional(object({
-        metadata = string
-      }))
-    })), []),
-    ingress = optional(list(object({
-      name                    = string
-      description             = optional(string, null)
-      disabled                = optional(bool, null)
-      priority                = optional(number, null)
-      destination_ranges      = optional(list(string), [])
-      source_ranges           = optional(list(string), [])
-      source_tags             = optional(list(string))
-      source_service_accounts = optional(list(string))
-      target_tags             = optional(list(string))
-      target_service_accounts = optional(list(string))
 
-      allow = optional(list(object({
-        protocol = string
-        ports    = optional(list(string))
-      })), [])
-      deny = optional(list(object({
-        protocol = string
-        ports    = optional(list(string))
-      })), [])
-      log_config = optional(object({
-        metadata = string
-      }))
-    })), []),
-  }))
-  default = {}
-}
-
-# variable "network_configs" {
-#   description = "Template Network Configuration"
-#   type = object({
-#     vpc = optional(map(object({
-#       project_id                             = string
-#       name                                   = string
-#       routing_mode                           = string
-#       delete_default_internet_gateway_routes = bool
-#       reserve_static_ip                      = optional(bool, false)
-#       subnets = list(object(
-#         {
-#           subnet_name                      = string,
-#           subnet_ip                        = string,
-#           subnet_region                    = string,
-#           subnet_private_access            = string,
-#           subnet_private_ipv6_access       = optional(string)
-#           subnet_flow_logs                 = optional(string)
-#           subnet_flow_logs_interval        = optional(string)
-#           subnet_flow_logs_sampling        = optional(number)
-#           subnet_flow_logs_metadata        = optional(string)
-#           subnet_flow_logs_filter          = optional(string)
-#           subnet_flow_logs_metadata_fields = optional(list(string))
-#           description                      = optional(string)
-#           purpose                          = optional(string)
-#           role                             = optional(string)
-#           stack_type                       = optional(string)
-#           ipv6_access_type                 = optional(string)
-#         })
-#       )
-#       secondary_ranges = optional(map(list(object({
-#         range_name    = string
-#         ip_cidr_range = string
-#       }))), {})
-#       routers = optional(map(object({
-#         name   = string
-#         region = string
-#       })), {})
-#       firewall_rules = object({
-#         egress = optional(list(object({
-#           name                    = string
-#           description             = optional(string, null)
-#           disabled                = optional(bool, null)
-#           priority                = optional(number, null)
-#           destination_ranges      = optional(list(string), [])
-#           source_ranges           = optional(list(string), [])
-#           source_tags             = optional(list(string))
-#           source_service_accounts = optional(list(string))
-#           target_tags             = optional(list(string))
-#           target_service_accounts = optional(list(string))
-
-#           allow = optional(list(object({
-#             protocol = string
-#             ports    = optional(list(string))
-#           })), [])
-#           deny = optional(list(object({
-#             protocol = string
-#             ports    = optional(list(string))
-#           })), [])
-#           log_config = optional(object({
-#             metadata = string
-#           }))
-#         })), []),
-#         ingress = optional(list(object({
-#           name                    = string
-#           description             = optional(string, null)
-#           disabled                = optional(bool, null)
-#           priority                = optional(number, null)
-#           destination_ranges      = optional(list(string), [])
-#           source_ranges           = optional(list(string), [])
-#           source_tags             = optional(list(string))
-#           source_service_accounts = optional(list(string))
-#           target_tags             = optional(list(string))
-#           target_service_accounts = optional(list(string))
-
-#           allow = optional(list(object({
-#             protocol = string
-#             ports    = optional(list(string))
-#           })), [])
-#           deny = optional(list(object({
-#             protocol = string
-#             ports    = optional(list(string))
-#           })), [])
-#           log_config = optional(object({
-#             metadata = string
-#           }))
-#         })), []),
-#       }),
-#       dns_peering_config = optional(map(object({
-#         dns_name                           = string
-#         domain                             = string
-#         type                               = optional(string, "peering")
-#         description                        = optional(string, null)
-#         force_destroy                      = optional(bool, false)
-#         private_visibility_config_networks = optional(list(string), [])
-#         target_network                     = optional(string, "")
-#       })), {})
-#       vpc_peering_config = optional(map(object({
-#         vpc_peering_name                          = string
-#         local_network                             = optional(string)
-#         peer_network                              = string
-#         export_peer_custom_routes                 = optional(bool, false)
-#         export_local_custom_routes                = optional(bool, false)
-#         export_peer_subnet_routes_with_public_ip  = optional(bool, false)
-#         export_local_subnet_routes_with_public_ip = optional(bool, true)
-#         stack_type                                = optional(string, "IPV4_ONLY")
-#       })))
-#       reserve_ip_for_psa = optional(map(object({
-#         reserve_ip_name = string
-#         address         = string
-#         prefix_length   = string
-#       })), {})
-#       private_service_access = optional(map(object({
-#         reserved_peering_ranges = list(string)
-#         service                 = string
-#       })), {})
-#     })), {})
-#   })
-# }
-
-# variable "vpc_peering_configs" {
-#   type = map(object({
-#     network_peering_name                      = string
-#     local_network                             = string
-#     peer_network                              = string
-#     export_local_custom_routes                = optional(bool, false)
-#     export_peer_custom_routes                 = optional(bool, false)
-#     export_local_subnet_routes_with_public_ip = optional(bool, false)
-#     export_peer_subnet_routes_with_public_ip  = optional(bool, true)
-#     stack_type                                = optional(string, "IPV4_ONLY")
-#   }))
-# }

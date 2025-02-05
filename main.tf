@@ -15,18 +15,6 @@ locals {
     }
   ]...)
 
-  # dns_peering = merge([
-  #   for vpc_name, vpc_details in var.network_configs.vpc :
-  #   {
-  #     for dns_name, dns_config in vpc_details.dns_peering_config :
-  #     "${vpc_name}_${dns_name}" => merge(
-  #       dns_config,
-  #       { "project_id" = vpc_details.project_id },
-  #       { "vpc_name" = vpc_name }
-  #     )
-  #   }
-  # ]...)
-
   vpc_peering = merge([
     for vpc_name, vpc_details in var.network_configs.vpc :
     {
@@ -86,41 +74,15 @@ module "vpc" {
   secondary_ranges                       = each.value.secondary_ranges
 }
 
-# module "firewall_rules" {
-#   source        = "terraform-google-modules/network/google//modules/firewall-rules"
-#   version       = "9.1.0"
-#   for_each      = var.network_configs.vpc
-#   project_id    = each.value.project_id
-#   network_name  = module.vpc[each.key].network_name
-#   egress_rules  = each.value.firewall_rules.egress
-#   ingress_rules = each.value.firewall_rules.ingress
-# }
-
-# This has changed
 module "firewall_rules" {
-  for_each      = length(var.firewall_rules) > 0 ? var.firewall_rules : {}
   source        = "terraform-google-modules/network/google//modules/firewall-rules"
   version       = "9.1.0"
+  for_each      = var.network_configs.vpc
   project_id    = each.value.project_id
   network_name  = module.vpc[each.key].network_name
-  egress_rules  = each.value.egress
-  ingress_rules = each.value.ingress
+  egress_rules  = each.value.firewall_rules.egress
+  ingress_rules = each.value.firewall_rules.ingress
 }
-
-# module "dns_peering" {
-#   source                             = "terraform-google-modules/cloud-dns/google"
-#   version                            = "5.3.0"
-#   for_each                           = local.dns_peering
-#   project_id                         = each.value.project_id
-#   type                               = each.value.type
-#   name                               = each.value.dns_name
-#   domain                             = each.value.domain
-#   description                        = each.value.description
-#   force_destroy                      = each.value.force_destroy
-#   private_visibility_config_networks = [module.vpc[each.value.vpc_name].network_self_link]
-#   target_network                     = each.value.target_network
-#   depends_on                         = [module.vpc]
-# }
 
 resource "google_compute_network_peering" "local_network_peering" {
   for_each             = local.vpc_peering
@@ -135,20 +97,6 @@ resource "google_compute_network_peering" "local_network_peering" {
 
   stack_type = each.value.stack_type
 }
-
-# resource "google_compute_network_peering" "peer_network_peering" {
-#   for_each             = local.vpc_peering
-#   name                 = each.value.vpc_peering_name
-#   network              = each.value.peer_network
-#   peer_network         = module.vpc[each.value.vpc_name].network_self_link
-#   export_custom_routes = each.value.export_peer_custom_routes
-#   import_custom_routes = each.value.export_local_custom_routes
-
-#   export_subnet_routes_with_public_ip = each.value.export_peer_subnet_routes_with_public_ip
-#   import_subnet_routes_with_public_ip = each.value.export_local_subnet_routes_with_public_ip
-
-#   stack_type = each.value.stack_type
-# }
 
 resource "google_compute_global_address" "private_ip_address" {
   for_each      = local.reserve_ip_for_psa
@@ -179,13 +127,11 @@ resource "google_compute_network_peering_routes_config" "peering_routes" {
   import_custom_routes = each.value.custom_routes.import_custom_routes
   export_custom_routes = each.value.custom_routes.export_custom_routes
 
-  # Add this - this is missing
   depends_on = [google_service_networking_connection.private_service_access]
 }
 
 
 # Private Service Connect Module
-
 resource "google_compute_address" "psc_address" {
   for_each     = length(var.private_service_connect) > 0 ? var.private_service_connect : {}
   project      = each.value.project_id
@@ -212,7 +158,7 @@ resource "google_compute_forwarding_rule" "psc_forwarding_rule" {
 
 # Vmware Engine Network Peering [VEN]
 resource "google_vmwareengine_network_peering" "vmw-engine-network-peering" {
-  # provider                            = google-beta
+  provider                            = google-beta
   for_each                            = length(var.vmw_network_peering) > 0 ? var.vmw_network_peering : {}
   name                                = each.value.name
   description                         = each.value.description
